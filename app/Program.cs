@@ -48,6 +48,16 @@ class ClientProxy : RealProxy
     {
         return innerProxy.Invoke(msg);
     }
+
+    public override object GetTransparentProxy()
+    {
+        return innerProxy.GetTransparentProxy();
+    }
+
+    public object GetBaseTransparentProxy()
+    {
+        return base.GetTransparentProxy();
+    }
 }
 
 class Program
@@ -74,10 +84,10 @@ class Program
         Console.WriteLine(dataImpl.Foo); // prints 1
 
         var clientDataProxy = new ClientProxy(typeof(IData), dataImpl);
-        var clientDataImpl = clientDataProxy.GetTransparentProxy() as IData;
+        var clientDataImpl = clientDataProxy.GetBaseTransparentProxy() as IData;
 
         var clientLogicProxy = new ClientProxy(typeof(ILogic), logicImpl);
-        var clientLogicImpl = clientLogicProxy.GetTransparentProxy() as ILogic;
+        var clientLogicImpl = clientLogicProxy.GetBaseTransparentProxy() as ILogic;
 
         clientLogicImpl.Update(dataImpl); // Works
         Console.WriteLine(clientDataImpl.Foo); // prints 2
